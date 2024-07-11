@@ -15,6 +15,19 @@ function App() {
             })
     }
 
+    const login = () => {
+        const host = window.location.host === 'localhost:5173' ? 'http://localhost:8080' : window.location.origin
+
+        window.open(host + '/oauth2/authorization/github', '_self')
+    }
+
+    const me = () => {
+        axios.get("/api/auth/me")
+            .then(response => {
+                console.log(response.data)
+            })
+    }
+
     useEffect(fetchTodos, [])
 
     if (!todos) {
@@ -23,6 +36,8 @@ function App() {
 
     return (
         <>
+            <button onClick={login}>Login</button>
+            <button onClick={me}>Me</button>
             <div className="page">
                 <h1>TODOs</h1>
                 {
