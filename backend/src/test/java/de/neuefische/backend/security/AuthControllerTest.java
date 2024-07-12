@@ -23,21 +23,29 @@ class AuthControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    public void authControllerGetMeNotLoggedIn() throws Exception {
+    void authControllerGetMeNotLoggedIn() throws Exception {
         mockMvc.perform(get("/api/auth/me"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    public void authControllerGetMeWithLoggedIn() throws Exception {
+    void authControllerGetMeWithLoggedIn() throws Exception {
         mockMvc.perform(get("/api/auth/me")
+                //Simple alternative with oauth2Login
+//                        .with(oauth2Login()
+//                                .attributes(a -> {
+//                                    a.put("sub", "user-id");
+//                                    a.put("login", "testUser");
+//                                    a.put("avatar_url", "image-url");
+//                                }))
                         .with(oidcLogin()
+                                .idToken(i -> i.subject("user-id"))
                                 .userInfoToken(token -> token
                                         .claim("login", "testUser")
                                         .claim("avatar_url", "image-url")
-                                        .claim("id", "123"))))
+                                ))
+                )
                 .andExpect(status().isOk())
-                .andExpect(content().string("user"));
+                .andExpect(content().string("user-id"));
     }
-
 }
